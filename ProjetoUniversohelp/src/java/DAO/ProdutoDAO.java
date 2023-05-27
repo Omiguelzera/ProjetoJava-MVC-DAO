@@ -11,77 +11,87 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import model.Produto;
 
+public class ProdutoDAO extends Conexao {
+    private Connection conn;
 
-/**
- *
- * @author migue
- */
-public class ProdutoDAO {
-    
-    private static final String INSERT = "INSERT INTO tproduto (id, nome, quantidade, preco ) VALUES (?, ?, ?, ?)";
-    private static final String SELECT_ALL = "SELECT * FROM tproduto";
+    public ProdutoDAO(Connection conn) {
+        this.conn = conn;
+    }
 
+    public void inserir(Produto produto) {
+        String sql = "INSERT INTO produto (nome, descricao, preco, quantidade) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, produto.getNome());
+            stmt.setDouble(2, produto.getPreco());
+            stmt.setInt(3, produto.getQuantidade());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao inserir o produto no banco de dados: " + e.getMessage());
+        }
+    }
 
-    public void cadastrar(Produto produto){
-    
-          Connection conexao = null;
-          try{
-              conexao = Conexao.getConexao();
-             
-              PreparedStatement pstmt = conexao.prepareStatement(INSERT);
-              
-              pstmt.setInt(1, produto.getIdProduto());
-              pstmt.setString(2, produto.getNomeProd());
-              pstmt.setInt(3, produto.getQuantidade());
-              pstmt.setDouble(4, produto.getPreco());
-           
-              pstmt.execute();
-              
-          }catch(Exception e ){
-          throw new RuntimeException(e);
-          }finally{
-              try{
-                  conexao.close();
-              }catch(SQLException ex){
-                  throw new RuntimeException (ex);
-              }
-          
-          }
-       
-     }
-     public ArrayList<Produto> listar() throws SQLException, ClassNotFoundException{
-          
-       
-            ArrayList<Produto> listaproduto = new ArrayList<Produto>();
-            
-            Connection conexao = Conexao.getConexao();
-            
-            PreparedStatement psmt = conexao.prepareStatement(SELECT_ALL );
-            
-            ResultSet rs = psmt.executeQuery();
-            
-            while(rs.next()){
-                
-                Produto novoProduto = new Produto();
-                novoProduto.setIdProduto(rs.getInt("id"));
-                novoProduto.setNomeProd("nome");
-                novoProduto.setQuantidade(rs.getInt("quantidade"));
-                novoProduto.setPreco(rs.getFloat("preco"));
-               
-                
-                listaproduto.add(novoProduto);
-                
-                
+    public void atualizar(Produto produto) {
+        String sql = "UPDATE produto SET nome = ?, descricao = ?, preco = ?, quantidade = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, produto.getNome());
+            stmt.setDouble(2, produto.getPreco());
+            stmt.setInt(3, produto.getQuantidade());
+            stmt.setInt(4, produto.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar o produto no banco de dados: " + e.getMessage());
+        }
+    }
+
+    public void excluir(Produto produto) {
+        String sql = "DELETE FROM produto WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, produto.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir o produto no banco de dados: " + e.getMessage());
+        }
+    }
+
+    public Produto buscarPorId(int id) {
+        String sql = "SELECT * FROM produto WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Produto produto = new Produto();
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setPreco(rs.getDouble("preco"));
+                produto.setQuantidade(rs.getInt("quantidade"));
+                return produto;
+            } else {
+                return null;
             }
-            
-            return listaproduto;
-            
-        } 
-       
-} 
-    
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar o produto no banco de dados: " + e.getMessage());
+        }
+    }
 
+    public List<Produto> listarTodos() {
+        String sql = "SELECT * FROM produto";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            List<Produto> produtos = new ArrayList<>();
+            while (rs.next()) {
+                Produto produto = new Produto();
+                produto.setId(rs.getInt("id"));
+                produto.setNome(rs.getString("nome"));
+                produto.setPreco(rs.getDouble("preco"));
+                produto.setQuantidade(rs.getInt("quantidade"));
+                produtos.add(produto);
+            }
+            return produtos;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar os produtos no banco de dados: " + e.getMessage());
+        }
+    }
+}

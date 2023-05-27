@@ -10,40 +10,62 @@ package model;
  * @author migue
  */
 public class Fornecedor {
-    
-    
-    private int idFornec;
-    private String nomeFornec;
-    private String empresa;
+    private int id;
+    private String nome;
+    private String cnpj;
+    private String endereco;
+    private String telefone;
 
-    
-    public int getIdFornec() {
-        return idFornec;
+    // Construtor vazio
+    public Fornecedor() {}
+
+    // Construtor com parâmetros
+    public Fornecedor(int id, String nome, String cnpj, String endereco, String telefone) {
+        this.id = id;
+        this.nome = nome;
+        this.cnpj = cnpj;
+        this.endereco = endereco;
+        this.telefone = telefone;
     }
 
-    
-    public void setIdFornec(int idFornec) {
-        this.idFornec = idFornec;
+    // Getters e setters
+    public int getId() {
+        return id;
     }
 
-    
-    public String getNomeFornec() {
-        return nomeFornec;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    
-    public void setNomeFornec(String nomeFornec) {
-        this.nomeFornec = nomeFornec;
+    public String getNome() {
+        return nome;
     }
 
-   
-    public String getEmpresa() {
-        return empresa;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    
-    public void setEmpresa(String empresa) {
-        this.empresa = empresa;
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(String endereco) {
+      this.endereco = endereco;
     }
     
+    public String getTelefone(){
+       return telefone;
+    }
+    
+    public void setTelefone (String telefone){
+         this.telefone =  telefone;
+    }
 }

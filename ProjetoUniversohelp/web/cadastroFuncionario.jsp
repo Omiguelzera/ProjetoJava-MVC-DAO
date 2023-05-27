@@ -33,7 +33,7 @@
 
                      Telefone: <input type="text" name="txtTelefone"><br>
 
-                          Email: <input type="text" name="txtEmail"><br>
+                       
 
                                        <input type="submit" name="acao" value="Cadastrar">
                                        

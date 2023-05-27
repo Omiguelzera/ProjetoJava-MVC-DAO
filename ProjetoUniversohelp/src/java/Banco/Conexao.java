@@ -14,10 +14,13 @@ import java.sql.SQLException;
  * @author migue
  */
 public class Conexao {
-     public static Connection getConexao() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3301/public?serverTimezone=UTC", "root", "miguer");
-        return con;
+     private static final String URL = "jdbc:postgresql://localhost:5432/Tcc";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "miguer";
+    
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
-
+    
 }
+

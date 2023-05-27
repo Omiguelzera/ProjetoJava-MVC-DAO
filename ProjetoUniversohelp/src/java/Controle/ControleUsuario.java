@@ -40,7 +40,7 @@ public class ControleUsuario extends HttpServlet {
          
          if(l.equals ("banana") && s.equals("1234")){
                 
-                request.getRequestDispatcher("menuPrincipal.jsp").forward(request, response);
+                request.getRequestDispatcher("MenuPrincipal.html").forward(request, response);
          
          
             }else{
