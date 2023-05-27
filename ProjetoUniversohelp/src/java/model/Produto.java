@@ -10,63 +10,52 @@ package model;
  * @author migue
  */
 public class Produto {
-    private int id;
-    private String nome;
-    private double preco;
+    
+    
+    private int idProduto;
+    private String nomeProd;
     private int quantidade;
-    private Fornecedor fornecedor;
+    private double preco;
 
-    // Construtor vazio
-    public Produto() {}
-
-    // Construtor com parâmetros
-    public Produto(int id, String nome, double preco, int quantidade, Fornecedor fornecedor) {
-        this.id = id;
-        this.nome = nome;
-        this.preco = preco;
-        this.quantidade = quantidade;
-        this.fornecedor = fornecedor;
+    
+    public int getIdProduto() {
+        return idProduto;
     }
 
-    // Getters e setters
-    public int getId() {
-        return id;
+    
+    public void setIdProduto(int idProduto) {
+        this.idProduto = idProduto;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    
+    public String getNomeProd() {
+        return nomeProd;
     }
 
-    public String getNome() {
-        return nome;
+    
+    public void setNomeProd(String nome) {
+        this.nomeProd = nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(double preco) {
-        this.preco = preco;
-    }
-
+    
     public int getQuantidade() {
         return quantidade;
     }
 
+    
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
 
-    public Fornecedor getFornecedor() {
-        return fornecedor;
+    
+    public Double getPreco() {
+        return preco;
     }
 
-    public void setFornecedor(Fornecedor fornecedor) {
-        this.fornecedor = fornecedor;
+    
+    public void setPreco( double preco) {
+        this.preco = preco;
     }
+    
     
 }

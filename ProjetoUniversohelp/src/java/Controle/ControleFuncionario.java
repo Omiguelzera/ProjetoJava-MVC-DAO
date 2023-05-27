@@ -9,7 +9,9 @@ import DAO.FuncionarioDAO;
 import model.Funcionario;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,99 +42,112 @@ public class ControleFuncionario extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-           String cad = request.getParameter("acao");
-           if(cad.equals("Cadastrar")){
-                
+            String op = request.getParameter("acao");
+            FuncionarioDAO fdao = new FuncionarioDAO();
+            Funcionario f = new Funcionario();
+
+            if (op.equals("CADASTRAR")) {
                 int id = Integer.parseInt(request.getParameter("txtId"));
                 String nome = request.getParameter("txtNome");
-                int idade =  Integer.parseInt(request.getParameter("txtIdade"));
+                int idade = Integer.parseInt(request.getParameter("txtIdade"));
                 String cargo = request.getParameter("txtCargo");
-                float salario = Float.parseFloat(request.getParameter("txtSalario"));
+                double salario = Double.parseDouble(request.getParameter("txtSalario"));
                 String telefone = request.getParameter("txtTelefone");
                 String email = request.getParameter("txtEmail");
-                
-                Funcionario fun = new Funcionario();
-                fun.setIdFunc(id);
-                fun.setNomeFunc(nome);
-                fun.setIdade(idade); 
-                fun.setCargo(cargo);
-                fun.setSalario(salario);
-                fun.setTelefone(telefone);
-                fun.setEmail(email);
-                
-                
-                
-                FuncionarioDAO funcionario = new FuncionarioDAO();
-                funcionario.cadastrar(fun);
-                
-                response.sendRedirect("sucessocadastro.jsp");
-           
-           }else if(cad.equals("Listar")){
-              
-              FuncionarioDAO func = new FuncionarioDAO();
-              
-              ArrayList<Funcionario> funcionario = func.listar();
-              
-              request.setAttribute("lista funcionario", funcionario );
-              
-              RequestDispatcher rd = request.getRequestDispatcher("listaFuncionario.jsp");
-              rd.forward(request, response);
-           
-           }else if(cad.equals("Atualizar")){
-           
-                int id = Integer.parseInt(request.getParameter("txtId"));
-                String nome = request.getParameter("txtNome");
-                int idade =  Integer.parseInt(request.getParameter("txtIdade"));
-                String cargo = request.getParameter("txtCargo");
-                float salario = Float.parseFloat(request.getParameter("txtSalario"));
-                String telefone = request.getParameter("txtTelefone");
-                String email = request.getParameter("txtEmail");
-                
-                Funcionario fun = new Funcionario();
-                fun.setIdFunc(id);
-                fun.setNomeFunc(nome);
-                fun.setIdade(idade); 
-                fun.setCargo(cargo);
-                fun.setSalario(salario);
-                fun.setTelefone(telefone);
-                fun.setEmail(email);
-                
-                
-                
-                FuncionarioDAO funcionario = new FuncionarioDAO();
-                funcionario.cadastrar(fun);
-                
-                response.sendRedirect("sucessocadastro.jsp");
-           
-           
-           }else if(cad.equals("Excluir")){
+                f.setIdFunc(id);
+                f.setNomeFunc(nome);
+                f.setIdade(idade);
+                f.setCargo(cargo);
+                f.setSalario(salario);
+                f.setTelefone(telefone);
+                f.setEmail(email);
+                String msg = "Cadastro";
+
+                try {
+                    fdao.cadastrar(f);
+
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("OpSucesso.jsp").forward(request, response);
+
+                } catch (ClassNotFoundException | SQLException ex) {
+                    System.out.println(" Error ClassNotFound" + ex);
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("erro.jsp").forward(request, response);
+
+                }
+
+            } else if (op.equals("LISTAR")) {
+                String msg = "Lista";
+                try {
+                    List<Funcionario> lfunc = fdao.consultarTodos();
+                    request.setAttribute("lfunc", lfunc);
+                    request.getRequestDispatcher("listaFuncionario.jsp").forward(request, response);
+
+                } catch (ClassNotFoundException | SQLException ex) {
+                    System.out.println("Error ClassNotFound" + ex);
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("erro.jsp").forward(request, response);
+                }
+
+            }else if (op.equals("DELETAR")){
+               int id = Integer.parseInt(request.getParameter("txtId"));
+               f.setIdFunc(id);
+               String msg = "Deletar";
                
-                int id = Integer.parseInt(request.getParameter("txtId"));
+               try{
+                  fdao.deletar(f);
+                  request.setAttribute("message", msg);
+                  request.getRequestDispatcher("OpSucesso.jsp").forward(request, response);
+               }
+               catch(ClassNotFoundException | SQLException ex){
+               System.out.println ("Error ClassNotFound" +ex);
+               request.setAttribute("message", msg);
+               request.getRequestDispatcher("erro.jsp").forward(request, response);
+               }
+            }else if(op.equals("ATUALIZAR")){
+                 int id = Integer.parseInt(request.getParameter("txtId"));
+                 f.setIdFunc(id);
+                 try{
+                     f =  fdao.consultarById(f);
+                     request.setAttribute("f", f);
+                     request.getRequestDispatcher("confirmaAtualizacaoFunc.jsp").forward(request, response);
+                 
+                 }catch(ClassNotFoundException | SQLException ex){
+                    System.out.println("Error ClassNotFound" +ex);
+                    request.getRequestDispatcher("erro.jsp").forward (request, response);
+                    }
+            }else if(op.equals("CONFIRMAR ATUALIZAÇÃO")){
+               int id = Integer.parseInt(request.getParameter("txtId"));
+               String nome = request.getParameter("txtNome");
+               int idade = Integer.parseInt(request.getParameter("txtIdade"));
+               String cargo = request.getParameter("txtCargo");
+               double salario = Double.parseDouble(request.getParameter("txtSalario"));
+               String telefone = request.getParameter("txtTelefone");
+               String email = request.getParameter("txtEmail");
+               f.setIdFunc(id);
+               f.setNomeFunc(nome);
+               f.setIdade(idade);
+               f.setCargo(cargo);
+               f.setSalario(salario);
+               f.setTelefone(telefone);
+               f.setEmail(email);
+               String msg = "Atualizar";
+               try{
+                   fdao.atualizar(f);
+                   request.setAttribute("message", msg);
+                   request.getRequestDispatcher("OpSucesso.jsp").forward(request, response);
                
-             
-                Funcionario fun = new Funcionario();
-                fun.setIdade(id);
+               }catch(ClassNotFoundException | SQLException ex){
+                   System.out.println("Error ClassNotFound" +ex);
+                   request.setAttribute("message", msg);
+                   request.getRequestDispatcher("erro.jsp").forward(request, response);
+               }
                 
-                
-                
-               FuncionarioDAO func = new FuncionarioDAO();
-               func.deletar(fun);
+            }
             
-              
-             response.sendRedirect("deletarFuncionario.jsp");
-               
-           
-           }
-           
-           
-        }catch (Exception e){
-        request.setAttribute("erro", e );
-        RequestDispatcher rd
-                = request.getRequestDispatcher("errocadastro.jsp");
-        rd.forward(request, response);
+
         }
-  
-        response.getWriter().close();
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

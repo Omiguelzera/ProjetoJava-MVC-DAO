@@ -10,61 +10,84 @@ package model;
  * @author migue
  */
 public class Funcionario {
-   private int id;
-   private String nome;
-   private String cpf;
-   private String cargo;
-   private double salario;
+    
+    private int idFunc;
+    private String nomeFunc;
+    private int idade;
+    private String cargo;
+    private double salario;
+    private String telefone;
+    private String email;
 
-   public Funcionario() {
-   }
+    
+    public int getIdFunc() {
+        return idFunc;
+    }
 
-   public Funcionario(int id, String nome, String cpf, String cargo, double salario) {
-       this.id = id;
-       this.nome = nome;
-       this.cpf = cpf;
-       this.cargo = cargo;
-       this.salario = salario;
-   }
+    
+    public void setIdFunc(int idFunc) {
+        this.idFunc = idFunc;
+    }
 
-   // getters e setters
-   public int getId() {
-       return id;
-   }
+   
+    public String getNomeFunc() {
+        return nomeFunc;
+    }
 
-   public void setId(int id) {
-       this.id = id;
-   }
+    
+    public void setNomeFunc(String nome) {
+        this.nomeFunc = nome;
+    }
 
-   public String getNome() {
-       return nome;
-   }
+    
+    public int getIdade() {
+        return idade;
+    }
 
-   public void setNome(String nome) {
-       this.nome = nome;
-   }
+    
+    public void setIdade(int idade) {
+        this.idade = idade;
+    }
+  
+    public String getCargo() {
+        return cargo;
+    }
 
-   public String getCpf() {
-       return cpf;
-   }
+    
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
 
-   public void setCpf(String cpf) {
-       this.cpf = cpf;
-   }
+    
+    public Double getSalario() {
+        return salario;
+    }
 
-   public String getCargo() {
-       return cargo;
-   }
+   
+    public void setSalario(double salario) {
+        this.salario = salario;
+    }
 
-   public void setCargo(String cargo) {
-       this.cargo = cargo;
-   }
+    
+    public String getTelefone() {
+        return telefone;
+    }
 
-   public double getSalario() {
-       return salario;
-   }
+    
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
 
-   public void setSalario(double salario) {
-       this.salario = salario;
-   }
+    
+    public String getEmail() {
+        return email;
+    }
+
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+   
+    
 }

@@ -5,15 +5,11 @@
  */
 package Controle;
 
-
-
 import DAO.ProdutoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,81 +23,149 @@ import model.Produto;
  */
 @WebServlet(name = "ControleProdutos", urlPatterns = {"/ControleProdutos"})
 public class ControleProdutos extends HttpServlet {
-    
-    private ProdutoDAO produtoDAO;
-    
-    @Override
-    public void init() throws ServletException {
-        produtoDAO  = new ProdutoDAO();
-    }
-    
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        String acao = request.getParameter("acao");
-        
-        if (acao == null) {
-            acao = "";
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+
+            String op = request.getParameter("acao");
+            ProdutoDAO pdao = new ProdutoDAO();
+            Produto p = new Produto();
+
+            if (op.equals("CADASTRAR")) {
+                int id = Integer.parseInt(request.getParameter("txtId"));
+                String nome = request.getParameter("txtNome");
+                int quantidade = Integer.parseInt(request.getParameter("txtQuantidade"));
+                double preco = Double.parseDouble(request.getParameter("txtPreco"));
+                p.setIdProduto(id);
+                p.setNomeProd(nome);
+                p.setQuantidade(quantidade);
+                p.setPreco(preco);
+                String msg = "Cadastrar";
+                try {
+                    pdao.cadastrar(p);
+                    System.out.println("Cadastrado com sucesso!!");
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("OpSucesso.jsp").forward(request, response);
+                } catch (ClassNotFoundException | SQLException ex) {
+                    System.out.println("Erro ClassNotFound: " + ex.getMessage());
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("erro.jsp").forward(request, response);
+
+                }
+            } else if (op.equals("LISTAR")) {
+                
+                try {
+                    List<Produto> lprod = pdao.consultarTodos();
+                    request.setAttribute("lprod", lprod);
+                    request.getRequestDispatcher("listaProduto.jsp").forward (request, response);
+
+                } catch (ClassNotFoundException | SQLException ex) {
+                    System.out.println("Erro ClassNotFound: " + ex.getMessage());
+                    request.getRequestDispatcher("erro.jsp").forward(request, response);
+
+                }
+            }else if (op.equals("DELETAR")) {
+                int id = Integer.parseInt(request.getParameter("txtId"));
+                p.setIdProduto(id);
+                String msg = "Deletar";
+                try {
+                    pdao.deletar(p);
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("OpSucesso.jsp").forward(request, response);
+                } catch (ClassNotFoundException | SQLException ex) {
+                    System.out.println("Erro ClassNotFound" + ex);
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("erro.jsp").forward(request, response);
+
+                }
+
+            }else if (op.equals("ATUALIZAR")) {
+                int id = Integer.parseInt(request.getParameter("txtId"));
+                p.setIdProduto(id);
+                try {
+                    p = pdao.consultarById(p);
+                    request.setAttribute("p", p);
+                    request.getRequestDispatcher("confirmarAtualizacao.jsp").forward(request, response);
+                } catch (ClassNotFoundException | SQLException ex) {
+                    System.out.println("Erro ClassNotFound: " + ex.getMessage());
+                }
+            }else if (op.equals("CONFIRMAR ATUALIZACAO")){
+            int id = Integer.parseInt(request.getParameter("txtId"));
+            String nome = request.getParameter("txtNome");
+            int quantidade = Integer.parseInt(request.getParameter("txtQuantidade"));
+            double preco = Double.parseDouble(request.getParameter("txtPreco"));
+            p.setIdProduto(id);
+            p.setNomeProd(nome);
+            p.setQuantidade(quantidade);
+            p.setPreco(preco);
+            String msg = "Atualizar";
+            
+            try{
+                pdao.atualizar(p);
+                System.out.println("Atualizado com sucesso");
+                request.setAttribute("message", msg);
+                request.getRequestDispatcher("OpSucesso.jsp").forward(request, response);
+                
+            }catch(ClassNotFoundException | SQLException ex){
+              System.out.println(" Erro ClassNotFound" + ex);
+              request.setAttribute("message", msg);
+              request.getRequestDispatcher("erro.jsp").forward(request, response);
+            }
+            
+            }
         }
-        
-        switch (acao) {
-            case "cadastrar":
-                request.getRequestDispatcher("/produto-cadastro.jsp").forward(request, response);
-                break;
-            case "editar":
-                Long id = Long.parseLong(request.getParameter("id"));
-                Produto produto = produtoDAO.buscarPorId(id);
-                request.setAttribute("produto", produto);
-                request.getRequestDispatcher("/produto-editar.jsp").forward(request, response);
-                break;
-            case "excluir":
-                id = Long.parseLong(request.getParameter("id"));
-                produtoDAO.excluir(id);
-                response.sendRedirect(request.getContextPath() + "/produto");
-                break;
-            default:
-                List<Produto> produtos = produtoDAO.listar();
-                request.setAttribute("produtos", produtos);
-                request.getRequestDispatcher("/produto-listar.jsp").forward(request, response);
-        }
+
     }
-    
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        String acao = request.getParameter("acao");
-        
-        if (acao == null) {
-            acao = "";
-        }
-        
-        switch (acao) {
-            case "cadastrar":
-                String nome = request.getParameter("nome");
-                double preco = Double.parseDouble(request.getParameter("preco"));
-                int quantidade = Integer.parseInt(request.getParameter("quantidade"));
-                
-                Produto produto = new Produto(nome, preco, quantidade);
-                produtoDAO.cadastrar(produto);
-                
-                response.sendRedirect(request.getContextPath() + "/produto");
-                break;
-            case "editar":
-                Long id = Long.parseLong(request.getParameter("id"));
-                nome = request.getParameter("nome");
-                preco = Double.parseDouble(request.getParameter("preco"));
-                quantidade = Integer.parseInt(request.getParameter("quantidade"));
-                
-                produto = new Produto(id, nome, preco, quantidade);
-                produtoDAO.atualizar(produto);
-                
-                response.sendRedirect(request.getContextPath() + "/produto");
-                break;
-        }
+        processRequest(request, response);
     }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }
-
-
-

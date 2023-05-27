@@ -6,112 +6,90 @@
 package DAO;
 
 import Banco.Conexao;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import model.Fornecedor;
+
+
 
 /**
  *
  * @author migue
  */
 public class FornecedorDAO {
-
-    private Connection conn;
-
-    public FornecedorDAO(Connection con) {
-        this.conn = conn;
-
+    
+    
+ public void cadastrar(Fornecedor forn) throws ClassNotFoundException, SQLException {
+        Connection con = Conexao.getConexao();
+        PreparedStatement comando = con.prepareStatement("insert into tfornecedor (id, nomefornec, empresa) values (?,?,?)");
+        comando.setInt(1, forn.getIdFornec());
+        comando.setString(2, forn.getNomeFornec());
+        comando.setString(3, forn.getEmpresa());
+        comando.execute();
+        con.close();
+    }
+    
+    public void deletar(Fornecedor forn) throws ClassNotFoundException, SQLException {
+        Connection con = Conexao.getConexao();
+        PreparedStatement comando = con.prepareStatement("delete from tfornecedor where id = ?");
+        comando.setInt(1, forn.getIdFornec());
+        comando.execute();
+        con.close();
+    }
+    
+    public void atualizar(Fornecedor forn) throws ClassNotFoundException, SQLException {
+        Connection con = Conexao.getConexao();
+        PreparedStatement comando = con.prepareStatement("update tfornecedor set nomefornec = ?, empresa = ? where id = ?");
+        comando.setString(1, forn.getNomeFornec());
+        comando.setString(2, forn.getEmpresa());
+        comando.setInt(3, forn.getIdFornec());
+        comando.execute();
+        con.close();
     }
 
-    public void inserir(Fornecedor fornecedor) {
-        String sql = "INSERT INTO fornecedor (nome, cnpj, endereco, telefone)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, fornecedor.getNome());
-            stmt.setString(2, fornecedor.getCnpj());
-            stmt.setString(3, fornecedor.getEndereco());
-            stmt.setString(4, fornecedor.getTelefone());
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao tentar inserir fornecedor no banco de dados :(");
-        }
+    public Fornecedor consultarById(Fornecedor forn) throws ClassNotFoundException, SQLException {
+        Connection con = Conexao.getConexao();
+        PreparedStatement comando = con.prepareStatement("select * from tfornecedor where id = ?");
+        comando.setInt(1, forn.getIdFornec());
+        ResultSet rs = comando.executeQuery();
+        Fornecedor forne = new Fornecedor();
+        if (rs.next()){
+            forne.setIdFornec(rs.getInt("id"));
+            forne.setNomeFornec(rs.getString("nomefornec"));
+            forne.setEmpresa(rs.getString("empresa"));
+            
+        }        
+        return forne;
     }
-
-    public void atualizar(Fornecedor fornecedor) {
-        String sql = "UPDATE fornecedor SET nome=?, cnpj=?, endereco=?, telefone=?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, fornecedor.getNome());
-            stmt.setString(2, fornecedor.getCnpj());
-            stmt.setString(3, fornecedor.getEndereco());
-            stmt.setString(4, fornecedor.getTelefone());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao tentar atualizar fornecedor :(");
-        }
+    
+    
+    public List<Fornecedor> consultarTodos() throws ClassNotFoundException, SQLException {
+        Connection con = Conexao.getConexao();
+        PreparedStatement comando = con.prepareStatement("select * from tfornecedor");
+        ResultSet rs = comando.executeQuery();
+        
+        List<Fornecedor> lforn = new ArrayList<Fornecedor>();
+        while(rs.next()){
+            Fornecedor forne = new Fornecedor();
+            forne.setIdFornec(rs.getInt("id"));
+            forne.setNomeFornec(rs.getString("nomefornec"));
+            forne.setEmpresa(rs.getString("empresa"));
+            lforn.add(forne);
+        }        
+        return lforn;
     }
-
-    public void excluir(Fornecedor fornecedor) {
-        String sql = "DELETE FROM fornecedor WHERE id=?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, fornecedor.getId());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao tentar excluir fornecedor :(");
-        }
-    }
-
-    public Fornecedor buscarPorId(int id) {
-        String sql = "SELECT * FROM fornecedor WHERE id =?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Fornecedor fornecedor = new Fornecedor();
-                fornecedor.setId(rs.getInt("id"));
-                fornecedor.setNome(rs.getString("nome"));
-                fornecedor.setCnpj(rs.getString("cnpj"));
-                fornecedor.setEndereco(rs.getString("endereco"));
-                fornecedor.setTelefone(rs.getString("telefone"));
-                return fornecedor;
-
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao tentar fazer a busca por ID :(");
-
-        }
-
-    }
-
-    public List<Fornecedor> listarTodos() {
-        String sql = "SELECT * FROM fornecedor";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            List<Fornecedor> fornecedores = new ArrayList<>();
-            while (rs.next()) {
-                Fornecedor fornecedor = new Fornecedor();
-                fornecedor.setId(rs.getInt("id"));
-                fornecedor.setNome(rs.getString("nome"));
-                fornecedor.setCnpj(rs.getString("cnpj"));
-                fornecedor.setEndereco(rs.getString("endereco"));
-                fornecedor.setTelefone(rs.getString("telefone"));
-                fornecedores.add(fornecedor);
-
-            }
-            return fornecedores;
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao tentar mostrar a lista de fornecedores :(");
-        }
-
-    }
-
 }
 
 
-    
+           
 

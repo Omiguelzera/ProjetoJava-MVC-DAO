@@ -8,7 +8,9 @@ package Controle;
 import DAO.FornecedorDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -38,71 +40,100 @@ public class ControleFornecedor extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-           String cad = request.getParameter("acao");
-           if(cad.equals("Cadastrar")){
-                
-                int id = Integer.parseInt(request.getParameter("txtId"));
-                String nome = request.getParameter("txtNome");
-                String empresa = request.getParameter("txtEmpresa");
-                
-                Fornecedor forn = new Fornecedor();
-                forn.setIdFornec(id);
-                forn.setNomeFornec(nome);
-                forn.setEmpresa(empresa);
-                
-                
-                
-                FornecedorDAO fornecedor = new FornecedorDAO();
-                fornecedor.cadastrar(forn);
-                
-                response.sendRedirect("sucessocadastro.jsp");
+           String op = request.getParameter("acao");
+           FornecedorDAO fdao = new FornecedorDAO();
+           Fornecedor forn = new Fornecedor();
            
-           }else if(cad.equals("Listar")){
-              
-              FornecedorDAO forn = new FornecedorDAO();
-              
-              ArrayList<Fornecedor> fornecedor = forn.listar();
-              
-              request.setAttribute("lista fornecedor", fornecedor );
-              
-              RequestDispatcher rd = request.getRequestDispatcher("listaFornecedor.jsp");
-              rd.forward(request, response);
-           
-           }else if(cad.equals("Atualizar")){
-           
-           
-           
-           
-           }else if(cad.equals("Excluir")){
-               
-                int id = Integer.parseInt(request.getParameter("txtId"));
-               
+           if(op.equals("CADASTRAR")){
+             int id = Integer.parseInt(request.getParameter("txtId"));
+             String nome = request.getParameter("txtNome");
+             String empresa = request.getParameter("txtEmpresa");
+             forn.setIdFornec(id);
+             forn.setNomeFornec(nome);
+             forn.setEmpresa(empresa);
              
-                Fornecedor fun = new Fornecedor();
-                fun.setIdFornec(id);
-                
-                
-                
-               FornecedorDAO func = new FornecedorDAO();
-               //func(fun);
-            
-              
-             response.sendRedirect("deletarFuncionario.jsp");
-               
+             String msg = "Cadastrar";
+             
+             try{
+                 fdao.cadastrar(forn);
+                 request.setAttribute("message", msg);
+                 request.getRequestDispatcher("OpSucesso.jsp").forward (request, response);
+             }catch(ClassNotFoundException | SQLException ex){
+             System.out.println("Error ClassNotFound" + ex) ;
+             request.setAttribute("message", msg);
+             request.getRequestDispatcher("erro.jsp").forward(request, response);
+             
+             }
+           }else if (op.equals("LISTAR")){
+           String msg = "Lista";
            
+           try{
+               List<Fornecedor> lforn = fdao.consultarTodos();
+               request.setAttribute("lforn", lforn);
+               request.getRequestDispatcher("listaFornecedor.jsp").forward(request, response);
+               
+               
+           }catch(ClassNotFoundException | SQLException ex){
+            System.out.println("Error ClassNotFound" +ex);
+            request.setAttribute("message", msg);
+            request.getRequestDispatcher("erro,jsp").forward(request, response);
            }
            
+           }else if (op.equals("DELETAR")){
+           int id = Integer.parseInt(request.getParameter("txtId"));
+           forn.setIdFornec(id);
+           String msg = "Deletar";
+           try{
+               fdao.deletar(forn);
+               request.setAttribute("message", msg);
+               request.getRequestDispatcher("OpSucesso.jsp").forward(request, response);
+               
+           }catch(ClassNotFoundException | SQLException ex){
+                    System.out.println("Error ClassNotFound" +ex);
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("erro,jsp").forward(request, response);
+                    
+            }
+           }else if (op.equals("ATUALIZAR")){
+              int id = Integer.parseInt(request.getParameter("txtId"));
+              forn.setIdFornec(id);
+              
+              try{
+                    forn= fdao.consultarById(forn);
+                    request.setAttribute("forn", forn);
+                    request.getRequestDispatcher("confirmaAtualizacaoForn.jsp").forward (request, response);
+                    
+              
+              }catch(ClassNotFoundException | SQLException ex){
+                    System.out.println("Error ClassNotFound " + ex);
+           }
+           }else if(op.equals("CONFIRMAR ATUALIZACAO")){
+             int id = Integer.parseInt(request.getParameter("txtId"));
+             String nome = request.getParameter("txtNome");
+             String empresa = request.getParameter("txtEmpresa");
+             forn.setIdFornec(id);
+             forn.setNomeFornec(nome);
+             forn.setEmpresa(empresa);
+             String msg = "Atualizar";
+                   
+            try{
+                    fdao.atualizar(forn);
+                    request.setAttribute("message", msg);
+                    request.getRequestDispatcher("OpSucesso.jsp").forward (request, response);
+                    
+              
+              }catch(ClassNotFoundException | SQLException ex){
+                    System.out.println("Error ClassNotFound " + ex);
+                     request.setAttribute("message", msg);
+                    request.getRequestDispatcher("erro.jsp").forward (request, response);
            
-        }catch (Exception e){
-        request.setAttribute("erro no cadastro", e );
-        RequestDispatcher rd
-                = request.getRequestDispatcher("listaFornecedor.jsp");
-        rd.forward(request, response);
-        }
+           
+           }
+          
     }
-
-    
-            // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+        }   
+    }
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -151,6 +182,11 @@ public class ControleFornecedor extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-}
+
+
+    }
+
+
+
 
 
