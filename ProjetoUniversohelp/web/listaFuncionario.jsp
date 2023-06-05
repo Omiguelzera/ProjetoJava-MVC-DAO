@@ -6,6 +6,7 @@
 
 <%@page import="java.util.ArrayList"%>
 <%@page import="model.Funcionario"%>
+<%@page import="model.Funcionario"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -17,7 +18,7 @@
         <h1>Lista de Funcionarios</h1>
         
         <%
-        ArrayList<Funcionario> listafuncionario = (ArrayList<Funcionario>) request.getAttribute("lfunc");
+        ArrayList<Funcionario> listafuncionario = (ArrayList<Funcionario>) request.getAttribute("lista funcionario");
         
         %>
         <table border="1">
@@ -42,7 +43,7 @@
                     <tr>
                         <td><%= f.getIdFunc() %></td>
                         <td><%= f.getNomeFunc() %></td>
-                        <td><%= f.getIdade() %></td>
+                        <td><%= f.getIdFunc() %></td>
                         <td><%= f.getCargo() %></td>
                         <td><%= f.getSalario() %></td>
                         <td><%= f.getTelefone() %></td>

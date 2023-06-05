@@ -17,7 +17,7 @@
         <h1>Lista de Funcionarios</h1>
         
         <%
-        ArrayList<Fornecedor> listafornecedor = (ArrayList<Fornecedor>) request.getAttribute("lforn");
+        ArrayList<Fornecedor> listafornecedor = (ArrayList<Fornecedor>) request.getAttribute("lista fornecedor");
         
         %>
         <table border="1">

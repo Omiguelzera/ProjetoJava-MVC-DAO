@@ -33,15 +33,16 @@
 
                      Telefone: <input type="text" name="txtTelefone"><br>
 
-                          Email: <input type="text" name="txtEmail"><br>
+                       
 
-                                       <input type="submit" name="acao" value="CADASTRAR">
+                                       <input type="submit" name="acao" value="Cadastrar">
                                        
-                                  <input type="submit" name="acao" value="LISTAR">
 
-                               <input type="submit" name="acao" value="ATUALIZAR">
+                                  <input type="submit" name="acao" value="Listar">
 
-                           <input type="submit" name="acao" value="DELETAR">
+                               <input type="submit" name="acao" value="Atualizar">
+
+                           <input type="submit" name="acao" value="Excluir">
 
                            
                        
