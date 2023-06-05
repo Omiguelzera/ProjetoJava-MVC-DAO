@@ -20,7 +20,7 @@
 
         
 
-          <form action="ControleFornecedor">
+          <form action="ControleFornecedor" >
 
      Id: <input type="text" name="txtId"><br>
      
@@ -28,13 +28,13 @@
 
           Empresa: <input type="text" name="txtEmpresa"><br>
 
-                     <input type="submit" name="acao" value="CADASTRAR">
+                     <input type="submit" name="acao" value="Cadastrar">
 
-                <input type="submit" name="acao" value="LISTAR">
+                <input type="submit" name="acao" value="Listar">
 
-             <input type="submit" name="acao" value="ATUALIZAR">
+             <input type="submit" name="acao" value="Atualizar">
 
-          <input type="submit" name="acao" value="DELETAR">
+          <input type="submit" name="acao" value="Excluir">
 
          </form>
                <div class="groupb">

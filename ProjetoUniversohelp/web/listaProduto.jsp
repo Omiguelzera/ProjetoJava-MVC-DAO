@@ -17,7 +17,7 @@
         <h1>Lista de Produtos</h1>
         
         <%
-        ArrayList<Produto> listaproduto = (ArrayList<Produto>) request.getAttribute("lprod");
+        ArrayList<Produto> listaproduto = (ArrayList<Produto>) request.getAttribute("lista produto");
         
         %>
         <table border="1">

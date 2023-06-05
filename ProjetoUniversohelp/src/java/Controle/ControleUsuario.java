@@ -6,6 +6,7 @@
 package Controle;
 
 import java.io.IOException;
+import java.lang.NullPointerException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,7 +40,7 @@ public class ControleUsuario extends HttpServlet {
          
          if(l.equals ("banana") && s.equals("1234")){
                 
-                request.getRequestDispatcher("menuPrincipal.jsp").forward(request, response);
+                request.getRequestDispatcher("MenuPrincipal.html").forward(request, response);
          
          
             }else{

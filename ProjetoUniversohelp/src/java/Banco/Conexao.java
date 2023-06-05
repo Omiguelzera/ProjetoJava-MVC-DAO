@@ -14,16 +14,13 @@ import java.sql.SQLException;
  * @author migue
  */
 public class Conexao {
-      private static final String URL = "jdbc:postgresql://localhost:5432/Tcc";
-    private static final String USUARIO = "postgres";
-    private static final String SENHA = "miguer";
-
-    public static Connection getConexao() throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver");
-            return DriverManager.getConnection(URL, USUARIO, SENHA);
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Driver do PostgreSQL não encontrado", e);
-        }
+     private static final String URL = "jdbc:postgresql://localhost:5432/Tcc";
+    private static final String USER = "postgres";
+    private static final String PASSWORD = "miguer";
+    
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
+    
 }
+
